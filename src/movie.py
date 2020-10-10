@@ -32,3 +32,4 @@ class Movie:
     production: str = ""
     website: str = ""
     response: str = ""
+    

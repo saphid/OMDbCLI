@@ -21,7 +21,7 @@ class OMDbClient():
         self.api_key = api_key
         self.base_url = base_url if base_url else 'http://www.omdbapi.com/'
 
-    def _get(self, params: Dict[str, str]) -> Dict[str, Any]:
+    def get(self, params: Dict[str, str]) -> Dict[str, Any]:
         """ Handles a get request to OMDbAPI given a dict of parameters
 
         Args:

@@ -29,7 +29,7 @@ def test_get(movie_resp: Dict[str,str], requests_mock):
     """ Tests mocked get requests """
     requests_mock.get(BASE_URL, text=json.dumps(movie_resp))
     params = {'t': movie_resp['Title']}
-    assert client._get(params=params) == movie_resp
+    assert client.get(params=params) == movie_resp
     
 @pytest.mark.parametrize('movie_resp', read_test_data_from_json('test_data/test_data_movies.json'))
 def test_create_movie_object(movie_resp: Dict[str, Any]):
