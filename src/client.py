@@ -12,7 +12,7 @@ from typing import Dict, List, Any
 
 import requests
 
-from src.movie import Movie
+from src.models import Movie, Query
 
 class OMDbClient():
     """ Handles all the calls to OMDbAPI and provides functions for getting and searching movies"""
@@ -21,7 +21,31 @@ class OMDbClient():
         self.api_key = api_key
         self.base_url = base_url if base_url else 'http://www.omdbapi.com/'
 
-    def get(self, params: Dict[str, str]) -> Dict[str, Any]:
+    def get_movie(self, query: Query) -> Movie:
+        """ Runs the query provided to return the best match movie
+
+        Args:
+            query (Query): Query with all the data needed to run the request
+
+        Returns:
+            Movie: Movie obj with all the responsed data neatly formatted
+        """
+        resp_json = self._get(params=query.params)
+        return self._from_resp_to_movie(movie_resp=resp_json)
+
+    def search_movies(self, query: Query) -> List[Movie]:
+        """ Runs the query provided to return a list of movies
+
+        Args:
+            query (Query): Query with all the data needed to run the request
+
+        Returns:
+            List[Movie]: List of Movie objs with partial data for each movie
+        """
+        resp_json = self._get(params=query.params)
+        return self._from_resp_to_search(search_resp=resp_json)
+
+    def _get(self, params: Dict[str, str]) -> Dict[str, Any]:
         """ Handles a get request to OMDbAPI given a dict of parameters
 
         Args:

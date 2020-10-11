@@ -1,13 +1,43 @@
-""" This module is to hold the query class.
+""" Contains the data models for this tool to help keep the code readable"""
 
-    The query object is a clean way to make a query and return parameters for OMDBAPI
-"""
+from typing import Dict, List, Optional
 
-from typing import Dict, Optional
+from dataclasses import dataclass
+
+@dataclass
+class Movie:
+    """ Holds all the data for a movie """
+    title: str
+    year: str
+    imdbid: str
+    item_type: str
+    poster: str
+
+    rated: str = ""
+    released: str = ""
+    runtime: str = ""
+    genre: str = ""
+    director: str = ""
+    writer: str = ""
+    actors: str = ""
+    plot: str = ""
+    language: str = ""
+    country: str = ""
+    awards: str = ""
+    ratings: List = None
+    metascore: str = ""
+    imdbrating: str = ""
+    imdbvotes: str = ""
+    dvd: str = ""
+    boxoffice: str = ""
+    production: str = ""
+    website: str = ""
+    response: str = ""
 
 class Query():
-    """ This class gives a userfriendly interface to create queries. Can return OMDBAPI params """
-
+    """ This class gives a userfriendly interface to create queries.
+        Can return OMDBAPI params
+    """
     def __init__(self,
                  search: str = None,
                  title: str = None,

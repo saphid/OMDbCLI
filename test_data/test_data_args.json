@@ -1,0 +1,7 @@
+[
+	[{"command":"search","title":"starwars", "func":"run"}, {"s":"starwars", "page":"1"}],
+	[{"command":"search","title":"star", "year": "1999", "func":"run"}, {"s":"star", "y":"1999", "page":"1"}],
+	[{"command":"get","imdbid":"tt3896198", "func":"run"}, {"i":"tt3896198", "page":"1"}],
+	[{"command":"get","title":"Star Wars: Episode VI - Return of the Jedi", "func":"run"}, {"t":"Star Wars: Episode VI - Return of the Jedi", "page":"1"}],
+	[{"command":"get","title":"Star Wars: Episode I - The Phantom Menace", "func":"run"},{"t":"Star Wars: Episode I - The Phantom Menace", "page":"1"}]
+]

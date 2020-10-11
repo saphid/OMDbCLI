@@ -5,26 +5,33 @@ from typing import Dict, Any
 
 import argparse
 
-from src.query import Query
+from src.models import Query
+from src.client import OMDbClient
+
 
 class OMDbCLI():
     """ This class allows an enduser to provide arguments and receive pretty results
     """
     def __init__(self):
-        pass
+        self.client = OMDbClient(api_key="83c6dc42")
 
     def run_parser(self):
+        """ Handles the cli argument parsing, using two subparsers.
+            "get" for getting single movies
+            "search" for getting lists of matching movies
+        """
         parser = argparse.ArgumentParser(
-        description='OMDbCLI: Search movies and get details on them')
-        subparsers = parser.add_subparsers()
+            description='OMDbCLI: Search movies and get details on them')
+        parser.set_defaults(func=self.run)
+        subparsers = parser.add_subparsers(title="commands", dest="command")
         search_parser = subparsers.add_parser(
-            'search', help='Get a list of movies matching the following critria')
-        search_parser.set_defaults(func=self.search)
+            'search',
+            help='Get a list of movies matching the following critria')
         get_parser = subparsers.add_parser(
             'get',
             help=
-            'Gets the details for the movie best matching the following critria')
-        get_parser.set_defaults(func=self.get)
+            'Gets the details for the movie best matching the following critria'
+        )
         search_parser.add_argument(
             '--title',
             help=
@@ -48,23 +55,23 @@ class OMDbCLI():
         get_parser.add_argument(
             '--imdbid',
             help=
-            'Will find the movie with this IMDB Id number (Used for: --get only)')
-        get_parser.add_argument(
-            '--tomato',
-            help=
-            'Shows the Rotten Tomatoes score with the movie details (Used with: --get only)'
+            'Will find the movie with this IMDB Id number (Used for: --get only)'
         )
         args = parser.parse_args()
-        print(type(args))
+        print(args)
         args.func(vars(args))
 
-    def get(self, args: Dict[str, Any]):
-        query = self._convert_args_to_params(cmd='get', args=args)
+    def run(self, args: Dict[str, Any]):
+        """ Processes the arguments and requests the results from OMDbAPI
 
-    def search(self, args: Dict[str, Any]):
-        query = self._convert_args_to_params(cmd='search', args=args)
+        Args:
+            args (Dict[str, Any]): Arguments for finding the movie(s)
+        """
+        command = args.get('command')
+        query = self._convert_args_to_params(args=args)
 
-    def _convert_args_to_params(self, cmd: str, args: Dict[str,Any]) -> Query:
+
+    def _convert_args_to_params(self, args: Dict[str, Any]) -> Query:
         """ Converts the arguments from the CLI to a Query object
 
         Args:
@@ -74,15 +81,12 @@ class OMDbCLI():
         Returns:
             Query: Query object with all the data needed to run the request
         """
-        if cmd == 'get':
-            del args['func']
-        elif cmd == 'search':
+        if args.get('command') == 'search':
             args['search'] = args.get('title')
             del args['title']
-            del args['func']
+        del args['func']
+        del args['command']
         return Query(**args)
-
-
 
 
 if __name__ == '__main__':
