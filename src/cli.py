@@ -1,11 +1,12 @@
 """ This module handles all of the CLI arguments and user interface stuff
 """
 
-from typing import Dict, Any
+from typing import Dict, List, Any
+from pprint import pprint
 
 import argparse
 
-from src.models import Query
+from src.models import Query, Movie
 from src.client import OMDbClient
 
 
@@ -58,7 +59,6 @@ class OMDbCLI():
             'Will find the movie with this IMDB Id number (Used for: --get only)'
         )
         args = parser.parse_args()
-        print(args)
         args.func(vars(args))
 
     def run(self, args: Dict[str, Any]):
@@ -69,7 +69,20 @@ class OMDbCLI():
         """
         command = args.get('command')
         query = self._convert_args_to_params(args=args)
+        if command == 'get':
+            movie: Movie = self.client.get_movie(query=query)
+            self.display_movie_details(movie=movie)
+        elif command == 'search':
+            results: List[Movie] = self.client.search_movies(query=query)
 
+    @staticmethod
+    def display_movie_details(movie: Movie) -> None:
+        """ Prints out all the details of the movie in a readable manner
+
+        Args:
+            movie (Movie): Movie Object with all the movie details
+        """
+        pprint(vars(movie))
 
     def _convert_args_to_params(self, args: Dict[str, Any]) -> Query:
         """ Converts the arguments from the CLI to a Query object
