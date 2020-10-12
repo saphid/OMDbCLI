@@ -160,10 +160,13 @@ class OMDbCLI():
         del args['command']
         return Query(**args)
 
-
-if __name__ == '__main__':
+def main():
     try:
         cli = OMDbCLI()
         cli.run_parser()
     except KeyboardInterrupt:
         sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
