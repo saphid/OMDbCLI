@@ -8,17 +8,24 @@
         print(movie.title)
 
 """
-from typing import Dict, List, Any
+import logging
+import sys
+
+from typing import Dict, List, Any, Optional
 
 import requests
 
 from src.models import Movie, Query
+from src.config import ConfigManager
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 class OMDbClient():
     """ Handles all the calls to OMDbAPI and provides functions for getting and searching movies"""
 
-    def __init__(self, api_key: str, base_url: str = None):
-        self.api_key = api_key
+    def __init__(self, base_url: str = None):
+        self.config = ConfigManager()
         self.base_url = base_url if base_url else 'http://www.omdbapi.com/'
 
     def get_movie(self, query: Query) -> Movie:
@@ -45,17 +52,30 @@ class OMDbClient():
         resp_json = self._get(params=query.params)
         return self._from_resp_to_search(search_resp=resp_json)
 
-    def _get(self, params: Dict[str, str]) -> Dict[str, Any]:
+    def _get(self, params: Dict[str, Optional[str]], retry: int=10) -> Dict[str, Any]:
         """ Handles a get request to OMDbAPI given a dict of parameters
 
         Args:
             params (Dict[str, str]): Parameters for OMDbAPI in OMDb format (http://www.omdbapi.com/)
+            retry (int): retry count
 
         Returns:
             Dict[str, Any]: Response from request as a dict
         """
-        params['apikey'] = self.api_key
-        resp = requests.get(self.base_url, params=params)
+        if not retry:
+            print('Too many retries, Please check your api key')
+            sys.exit(0)
+        params['apikey'] = self.config.api_key
+        try:
+            resp = requests.get(self.base_url, params=params)
+            resp.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logging.debug('HTTPError: %s', err)
+            print('Your api key was invalid or not yet activated, Please check email and make sure to type your key correctly')
+            self.config.invalidate_key()
+            return self._get(params=params, retry=retry-1)
+
+        logging.debug('Get Resp: %s', resp.json())
         return resp.json()
 
     def _from_resp_to_movie(self, movie_resp: Dict[str, Any]) -> Movie:

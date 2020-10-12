@@ -1,6 +1,7 @@
 """ Test data objects"""
 
 from typing import Union, Dict, List
+from uuid import uuid4
 
 import json
 
@@ -48,6 +49,11 @@ class TestData():
     def arguments(cls) -> List:
         """ Returns a list of arguments and their resulting queries"""
         return cls._load_data_from_json(json_file='test_data_args.json')
+
+    @classmethod
+    def configs(cls) -> List:
+        """ Returns a list of api_keys for testing"""
+        return [str(uuid4())[-8:] for x in range(10)]
 
     @staticmethod
     def _load_data_from_json(json_file: str) -> List:

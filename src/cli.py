@@ -1,9 +1,10 @@
-""" This module handles all of the CLI arguments and user interface stuff
-"""
+""" This module handles all of the CLI arguments and user interface stuff"""
+
 
 from typing import Dict, List, Any
 from pprint import pprint
 
+import sys
 import argparse
 
 from src.models import Query, Movie
@@ -14,7 +15,8 @@ class OMDbCLI():
     """ This class allows an enduser to provide arguments and receive pretty results
     """
     def __init__(self):
-        self.client = OMDbClient(api_key="83c6dc42")
+        # self.client = OMDbClient(api_key="83c6dc42")
+        self.client = OMDbClient()
 
     def run_parser(self):
         """ Handles the cli argument parsing, using two subparsers.
@@ -103,5 +105,8 @@ class OMDbCLI():
 
 
 if __name__ == '__main__':
-    cli = OMDbCLI()
-    cli.run_parser()
+    try:
+        cli = OMDbCLI()
+        cli.run_parser()
+    except KeyboardInterrupt:
+        sys.exit(0)
