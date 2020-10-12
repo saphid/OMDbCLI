@@ -66,6 +66,7 @@ class OMDbClient():
             print('Too many retries, Please check your api key')
             sys.exit(0)
         params['apikey'] = self.config.api_key
+        params['type'] = 'movie'
         try:
             resp = requests.get(self.base_url, params=params)
             resp.raise_for_status()

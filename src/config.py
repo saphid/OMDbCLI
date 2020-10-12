@@ -7,11 +7,11 @@ from typing import Dict
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+
 class ConfigManager():
     """ This class creating, loading, and updating the config file,
         Also used to get and update the values of the config
     """
-
     def __init__(self):
         self._api_key = None
         self.old_api_key = None
@@ -19,7 +19,6 @@ class ConfigManager():
         logging.debug('Loaded config: %s', vars(self))
         if not self._api_key:
             self._api_key = self.prompt_for_key().get('api_key')
-
 
     def invalidate_key(self):
         """ Wipes the current api key"""
@@ -48,15 +47,18 @@ class ConfigManager():
         """ Prompt's the user to enter their API key"""
         api_key = input('Please enter your api key: ')
         logging.debug('prompt api_key %s', api_key)
-        data = {'api_key': api_key} if api_key else self.prompt_for_key()
+        data = {
+            'api_key': api_key,
+            'old_api_key': self.api_key
+        } if api_key else self.prompt_for_key()
         logging.debug('prompt data: %s', data)
         return data
 
     def _update_config_file(self, data: Dict) -> None:
         """ Updates the config file with the current state this class"""
-        with open('.conf','w') as conf_file:
+        with open('.conf', 'w') as conf_file:
             json.dump(data, conf_file)
-    
+
     def _load_config(self):
         """ Loads the current config file"""
         try:
@@ -70,7 +72,7 @@ class ConfigManager():
             data = self.prompt_for_key()
             self._update_config_file(data)
         return data
-        
+
     def _update_config(self, data: Dict) -> None:
         """ Updates the class variables with data from data"""
         self._api_key = data.get('api_key', self._api_key)

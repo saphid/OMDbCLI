@@ -68,3 +68,7 @@ class Query():
         }
         params = {k:v for k,v in params.items() if v is not None}
         return params
+
+    def next_page(self) -> None:
+        """ Updates this query to look for the next page"""
+        self.page = str(int(self.page) + 1)
