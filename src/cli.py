@@ -1,6 +1,5 @@
 """ This module handles all of the CLI arguments and user interface stuff"""
 
-
 from typing import Dict, List, Any
 from pprint import pprint
 
@@ -11,10 +10,10 @@ import logging
 from src.models import Query, Movie
 from src.client import OMDbClient
 
-from tabulate import tabulate
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+__version__ = '0.1.0'
+
 
 class OMDbCLI():
     """ This class allows an enduser to provide arguments and receive pretty results
@@ -29,8 +28,13 @@ class OMDbCLI():
             "search" for getting lists of matching movies
         """
         parser = argparse.ArgumentParser(
-            description='OMDbCLI: Search movies and get details on them')
+            description='OMDbCLI: Search movies and get details on them',
+            prog='OMDbCLI')
         parser.set_defaults(func=self.run)
+        parser.add_argument("-v",
+                            "--version",
+                            action="version",
+                            version=f'{parser.prog} {__version__}')
         subparsers = parser.add_subparsers(title="commands", dest="command")
         search_parser = subparsers.add_parser(
             'search',
@@ -91,15 +95,20 @@ class OMDbCLI():
         Args:
             movie (Movie): Movie Object with all the movie details
         """
-        rt_score = ''.join([rating.get('Value') for rating in movie.ratings if rating.get('Source') == 'Rotten Tomatoes'])
+        rt_score = ''.join([
+            rating.get('Value') for rating in movie.ratings
+            if rating.get('Source') == 'Rotten Tomatoes'
+        ])
         rt_line = f'Rotten Tomatoes: {rt_score}' if rt_score else 'No Rotten Tomatoes score'
-        print(f'Movie:\t{movie.title} ({movie.year}) - {movie.rated} - {rt_line}')
+        print(
+            f'Movie:\t{movie.title} ({movie.year}) - {movie.rated} - {rt_line}'
+        )
         print(f'Writer(s):\t{movie.writer}\nDirector:\t{movie.director}')
         print(f'Actors:\n\t{movie.actors}')
         print(f'Plot:\n\t{movie.plot}')
 
-
-    def display_search_results(self, results: List[Movie], query: Query) -> None:
+    def display_search_results(self, results: List[Movie],
+                               query: Query) -> None:
         """ Prints out the current page of search results
 
         Args:
@@ -108,13 +117,13 @@ class OMDbCLI():
         """
         page_start = (int(query.page) - 1) * 10
         for index, movie in enumerate(results[page_start:]):
-            item_number = index + 1 + page_start 
+            item_number = index + 1 + page_start
             print(f'{item_number})\t {movie.title} ({movie.year})')
-
 
     def search_prompt(self, results: List[Movie], query: Query) -> None:
         while True:
-            answer = input('Press "Enter" for more, or the item number for details: ')
+            answer = input(
+                'Press "Enter" for more, or the item number for details: ')
             if answer in ['quit', 'exit']:
                 sys.exit(0)
             if not answer:
@@ -127,14 +136,12 @@ class OMDbCLI():
             except ValueError:
                 print('Numbers only please')
                 continue
-            if item_number < int(query.page)*10:
+            if item_number < int(query.page) * 10:
                 movie_query = Query(imdbid=results[int(answer)].imdbid)
                 found_movie: Movie = self.client.get_movie(query=movie_query)
                 self.display_movie_details(movie=found_movie)
                 _ = input('Press "Enter" to go back to the search results')
                 self.display_search_results(results=results, query=query)
-
-
 
     def _convert_args_to_params(self, args: Dict[str, Any]) -> Query:
         """ Converts the arguments from the CLI to a Query object
