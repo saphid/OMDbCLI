@@ -2,11 +2,11 @@
 A simple CLI tool to run searches for movies and get details about movies from the OMDbAPI.
 
 # Installation
-
+```
 git clone https://github.com/saphid/OMDbCLI.git
 cd ombdcli
 python setup.py install
-
+```
 # Usage
 ```
 commands:
